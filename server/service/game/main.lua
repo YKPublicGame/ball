@@ -1,13 +1,19 @@
 local skynet = require "skynet"
 local map = require "map"
 local handler = require "handler"
+local playermgr = require "playermgr"
+local rank = require "rank"
+local timer = require "timer"
+
 
 local CMD = {}
 
 -- 玩家进入
-function CMD.enter()
-    print("enter")
-    return map:addPlayer()
+function CMD.enter(gate,fd,name)
+    local p = playermgr:addPlayer(name,gate,fd)
+
+    map:addPlayer(p:getID())
+    return p:getID()
 end
 
 function CMD.msg(playerid,cmd,data)
@@ -31,4 +37,7 @@ skynet.start(function ()
             c(...)
         end
     end)
+    rank:init()
+    playermgr:init()
+    timer.init()
 end)

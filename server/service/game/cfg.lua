@@ -1,15 +1,10 @@
-return {
-    gameWidth = 100,
-    gameHeight = 100,
-    foodMass = 1,
-    defaultPlayerMass = 3,
-    virus = {
-        defaultMass = {
-            from = 1,
-            to = 100
-        },
-        fill = 1,
-        stroke = 1,
-        strokeWidth = 1
-    },
-}
+local cjson = require "cjson"
+
+local f = io.open("./config.json")
+local data = f:read("*all")
+f:close()
+print("data",data)
+local cfg = cjson.decode(data)
+
+return cfg
+

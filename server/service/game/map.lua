@@ -11,14 +11,30 @@ function M:init()
     self.users ={}
 end
 
+function M:getUserList()
+    return self.users
+end
+
+function M:getFoodList()
+    return self.food
+end
+
+function M:getVirusList()
+    return self.virus
+end
+
+function M:getMassList()
+    return self.massFood
+end
+
 function M:getID()
     self.id = self.id + 1
     return self.id
 end
 
-function M:addPlayer()
+function M:addPlayer(id)
     local p = {
-        id = self:getID(),
+        id = id,
         x = math.random(1,c.gameWidth),
         y = math.random(1,c.gameHeight),
         w = c.defaultPlayerMass,
@@ -36,7 +52,6 @@ function M:addPlayer()
         }
     }
     table.insert(self.users,p)
-    return p.id
 end
 
 function M:getPlayer(id)
@@ -51,7 +66,6 @@ end
 function M:addFood(toAdd)
     local radius = util.massToRadius(c.foodMass)
     for i=1,toAdd do
-        self.food_id = self.food_id + 1
         local o = {
             id = self:getID(),
             x = math.random(1,c.gameWidth),
@@ -197,7 +211,8 @@ function M:moveMass(mass)
 end
 
 function M:balanceMass()
---    local totalMass = food.length * c.foodMass + users.map(function(u) {
+    local totalMass = #self.food * c.foodMass
+    --+ users.map(function(u) {
 --        return u.massTotal
 --    }).reduce(function(pu, cu) {
 --        return pu + cu
@@ -205,24 +220,34 @@ function M:balanceMass()
 --    0)
 
     local massDiff = c.gameMass - totalMass
-    local maxFoodDiff = c.maxFood - food.length
-    local foodDiff = parseInt(massDiff / c.foodMass) - maxFoodDiff
-    local foodToAdd = Math.min(foodDiff, maxFoodDiff)
-    local foodToRemove = -Math.max(foodDiff, maxFoodDiff)
+    local maxFoodDiff = c.maxFood - #self.food
+    local foodDiff = math.floor(massDiff / c.foodMass - maxFoodDiff)
+    local foodToAdd = math.min(foodDiff, maxFoodDiff)
+    local foodToRemove = -math.max(foodDiff, maxFoodDiff)
 
-    if (foodToAdd > 0) then
-        --console.log('[DEBUG] Adding ' + foodToAdd + ' food to level!')
+    -- 食物太少，增加食物
+    if foodToAdd > 0 then
         self:addFood(foodToAdd)
-        --console.log('[DEBUG] Mass rebalanced!')
+    -- 食物太多，减少食物
     elseif (foodToRemove > 0) then
-        --console.log('[DEBUG] Removing ' + foodToRemove + ' food from level!')
         self:removeFood(foodToRemove)
     end
 
-    local virusToAdd = c.maxVirus - virus.length
-
+    -- 保持毒刺数量不变
+    local virusToAdd = c.maxVirus - #self.virus
     if virusToAdd > 0 then
         self:addVirus(virusToAdd)
+    end
+end
+
+function M:updateUsers()
+    for _,v in ipairs(self.users) do
+        self:tickPlayer(p)
+    end
+    for _,v in ipairs(self.massFood) do
+        if v.speed > 0 then
+           self:moveMass(v)
+        end
     end
 end
 

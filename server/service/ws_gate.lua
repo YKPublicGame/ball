@@ -8,6 +8,7 @@ local cjson = require "cjson"
 
 local game
 local id2player = {}
+local wss = {}
 
 local ws_port = ...
 
@@ -15,8 +16,9 @@ local H = {}
 
 function H.on_open(ws)
     print(string.format("%d::open", ws.id))
-    local playerid = skynet.call(game,"lua","enter",ws.id)
+    local playerid = skynet.call(game,"lua","enter",skynet.self(),ws.id,"test")
     id2player[ws.id] = playerid
+    wss[ws.id] = ws
 end
 
 function H.on_message(ws, message)
@@ -49,6 +51,17 @@ local function handle_socket(id)
     end
 end
 
+local CMD = {}
+
+function CMD.send(fd,msg)
+    local ws = wss[fd]
+    if not ws then
+        return
+    end
+
+    ws:send_text(cjson.encode(msg))
+end
+
 skynet.start(function()
     local address = "0.0.0.0:"..ws_port
     skynet.error("Listening "..address)
@@ -57,5 +70,15 @@ skynet.start(function()
        socket.start(id)
        handle_socket(id)
     end)
+
+    skynet.dispatch("lua",function(session,source,cmd,...)
+        local f = CMD[cmd]
+        if session ~= 0 then
+            skynet.ret(skynet.pack(f(...)))
+        else
+            f(...)
+        end
+    end)
+
     game = skynet.newservice("game")
 end)
