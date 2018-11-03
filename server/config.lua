@@ -1,6 +1,6 @@
 -- preload = "./examples/preload.lua"	-- run preload.lua before every lua service run
 thread = 8
-logger = "skynet.log"
+--logger = "skynet.log"
 logpath = "."
 harbor = 0
 start = "main"	-- main script
@@ -16,5 +16,10 @@ snax = root.."examples/?.lua;"..root.."test/?.lua"
 
 -- snax_interface_g = "snax_g"
 luaservice = "./service/?.lua;./service/?/main.lua;"..luaservice
+lua_path = "./lualib/?.lua;./skynet_websocket/?.lua;"..lua_path
+lua_cpath = "./luaclib/?.so;"..lua_cpath
 cpath = root.."cservice/?.so"
-daemon = "./skynet.pid"
+--daemon = "./skynet.pid"
+
+
+ws_port = 8002
