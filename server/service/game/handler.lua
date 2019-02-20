@@ -8,7 +8,7 @@ function M.enter(player,data)
     local ret = {
         cmd = "welcome",
         data = {
-            id = player.id
+            id = player.id,
             gameWidth = c.gameWidth,
             gameHeight = c.gameHeight,
             userList = map:getUserList(),

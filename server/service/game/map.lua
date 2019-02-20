@@ -14,6 +14,7 @@ function M:init()
     self.massFood = {}
     self.virus = {}
     self.users ={}
+    self.fd_2_player = {}
 end
 
 function M:getUserList()
@@ -37,11 +38,16 @@ function M:getID()
     return self.id
 end
 
-function M:addPlayer()
-    local radius = util.massToRadius(c.defaultPlayerMass)
+function M:getPlayerByFd(fd)
+    return self.fd_2_player[fd]
+end
+
+function M:addPlayer(fd,name)
+    local radius = massToRadius(c.defaultPlayerMass)
 
     local p = {
         id = self:getID(),
+        name = name,
         x = math.random(1,c.gameWidth),
         y = math.random(1,c.gameHeight),
         w = c.defaultPlayerMass,
@@ -64,6 +70,8 @@ function M:addPlayer()
         }
     }
     table.insert(self.users,p)
+
+    self.fd_2_player[fd] = p
     return p
 end
 
@@ -251,6 +259,10 @@ function M:balanceMass()
     if virusToAdd > 0 then
         self:addVirus(virusToAdd)
     end
+end
+
+function M:tickPlayer(player)
+
 end
 
 function M:updateUsers()

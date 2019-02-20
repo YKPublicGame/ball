@@ -8,14 +8,6 @@ local timer = require "timer"
 
 local CMD = {}
 
--- 玩家进入
-function CMD.enter(gate,fd,name)
-    local p = playermgr:addPlayer(name,gate,fd)
-
-    map:addPlayer(p:getID())
-    return p:getID()
-end
-
 function CMD.msg(fd,cmd,data)
     local f = handler[cmd]
     if not f then
@@ -25,7 +17,7 @@ function CMD.msg(fd,cmd,data)
     local player = map:getPlayerByFd(fd)
     if not player then
         if cmd == "enter" then
-            player = map:addPlayer()
+            player = map:addPlayer(fd,data.name)
         else
             return
         end

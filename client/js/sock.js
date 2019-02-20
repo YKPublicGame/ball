@@ -1,16 +1,10 @@
 // socket stuff.
 function setupSocket() {
-	ws = new WebSocket("ws://120.79.91.100:8002/ws")
+	ws = new WebSocket("ws://a.shortlife.top:8002/ws")
 
 	ws.onopen = function()
 	{
-        player = playerSettings;
-        player.name = global.playerName;
-        player.screenWidth = global.screenWidth;
-        player.screenHeight = global.screenHeight;
-        player.target = window.canvas.target;
-        global.player = player;
-        ws.emit('enter',{name:global.playerName});
+       ws.emit('enter',{name:global.playerName});
 	};
 
 	ws.onmessage = function(evt)
@@ -52,7 +46,17 @@ function setupSocket() {
     });
 
     // Handle connection.
-    ws.on('welcome', function (playerSettings) {
+    ws.on('welcome', function (data) {
+        var player = {
+            id: data.id,
+            gameWidth: data.gameWidth,
+            gameHeight: data.gameHeight,
+            name: global.playerName,
+            screenWidth: global.screenWidth,
+            screenHeight: global.screenHeight,
+            target: window.canvas.target
+        };
+        global.player = player;
         
         global.gameStart = true;
         global.gameWidth = data.gameWidth;

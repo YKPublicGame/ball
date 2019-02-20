@@ -202,8 +202,7 @@ function gameLoop() {
             });
 
             drawPlayers(orderMass);
-            ws.emit('0', window.canvas.target); // playerSendTarget "Heartbeat".
-
+            ws.emit('target', window.canvas.target); // playerSendTarget "Heartbeat".
         } else {
             graph.fillStyle = '#333333';
             graph.fillRect(0, 0, global.screenWidth, global.screenHeight);
