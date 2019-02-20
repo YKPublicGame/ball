@@ -4,31 +4,11 @@ local map = require "map"
 
 local M = {}
 
-function M.respawn(playerid)
-    print(playerid)
-    local data = map:getPlayer(playerid) 
-    return {cmd="welcome",data=data}
-end
-
-function M.gotit(playerid,data)
-    local user = map:getPlayer(playerid)
-    if not user then
-
-    end
-
-    local radius = util.massToRadius(c.defaultPlayerMass)
-    user.cells = {
-        {
-            mass = c.defaultPlayerMass,
-            x = math.random(1,c.gameWidth),
-            y = math.random(1,c.gameHeight),
-            radius = radius
-        }
-    }
-    
+function M.enter(player,data)
     local ret = {
-        cmd = "gameSetup",
+        cmd = "welcome",
         data = {
+            id = player.id
             gameWidth = c.gameWidth,
             gameHeight = c.gameHeight,
             userList = map:getUserList(),
@@ -38,29 +18,22 @@ function M.gotit(playerid,data)
         }
     }
 
-    print("=================")
-    util.print(ret.data.foodList)
-
     return ret
 end
 
-function M.windowResized(playerid,data)
-    local user = map:getPlayer(playerid)
-    if not user then
-        return
-    end
-
-    user.screenWidth = data.screenWidth
-    user.screenHeight = data.screenHeight
+function M.windowResized(player,data)
+    player.screenWidth = data.screenWidth
+    player.screenHeight = data.screenHeight
 end
 
-M["0"] = function (playerid,data)
-    local user = map:getPlayer(playerid)
-    if not user then
-        return
-    end
+function M.target(player,data)
+    player.target = data.target
+end
 
-    user.target = target
+function M.split(player,data)
+end
+
+function M.feed(player,data)
 end
 
 return M

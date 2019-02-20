@@ -4,7 +4,13 @@ function setupSocket() {
 
 	ws.onopen = function()
 	{
-		ws.emit('respawn');
+        player = playerSettings;
+        player.name = global.playerName;
+        player.screenWidth = global.screenWidth;
+        player.screenHeight = global.screenHeight;
+        player.target = window.canvas.target;
+        global.player = player;
+        ws.emit('enter',{name:global.playerName});
 	};
 
 	ws.onmessage = function(evt)
@@ -47,26 +53,8 @@ function setupSocket() {
 
     // Handle connection.
     ws.on('welcome', function (playerSettings) {
-        player = playerSettings;
-		console.log(player)
-        player.name = global.playerName;
-        player.screenWidth = global.screenWidth;
-        player.screenHeight = global.screenHeight;
-        player.target = window.canvas.target;
-        global.player = player;
-        window.chat.player = player;
-        ws.emit('gotit', player);
+        
         global.gameStart = true;
-        debug('Game started at: ' + global.gameStart);
-        window.chat.addSystemLine('Connected to the game!');
-        window.chat.addSystemLine('Type <b>-help</b> for a list of commands.');
-        if (global.mobile) {
-            document.getElementById('gameAreaWrapper').removeChild(document.getElementById('chatbox'));
-        }
-		c.focus();
-    });
-
-    ws.on('gameSetup', function(data) {
         global.gameWidth = data.gameWidth;
         global.gameHeight = data.gameHeight;
 		
@@ -75,6 +63,15 @@ function setupSocket() {
         viruses = data.virusList;
         fireFood = data.massList;
         resize();
+
+        debug('Game started at: ' + global.gameStart);
+        window.chat.player = player;
+        window.chat.addSystemLine('Connected to the game!');
+        window.chat.addSystemLine('Type <b>-help</b> for a list of commands.');
+        if (global.mobile) {
+            document.getElementById('gameAreaWrapper').removeChild(document.getElementById('chatbox'));
+        }
+		c.focus();
     });
 
     ws.on('playerDied', function (data) {

@@ -16,18 +16,14 @@ local H = {}
 
 function H.on_open(ws)
     print(string.format("%d::open", ws.id))
-    local playerid = skynet.call(game,"lua","enter",skynet.self(),ws.id,"test")
-    id2player[ws.id] = playerid
-    wss[ws.id] = ws
 end
 
 function H.on_message(ws, message)
     skynet.error("recv message")
     print(string.format("%d receive:%s", ws.id, message))
     local msg = cjson.decode(message)
-    local playerid = id2player[ws.id]
     if msg then
-        local retmsg = skynet.call(game,"lua","msg",playerid,msg.cmd,msg.data)
+        local retmsg = skynet.call(game,"lua","msg",ws.id,msg.cmd,msg.data)
         if retmsg then
             ws:send_text(cjson.encode(retmsg))
         end

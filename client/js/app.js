@@ -135,12 +135,12 @@ var c = window.canvas.cv;
 var graph = c.getContext('2d');
 
 $( "#feed" ).click(function() {
-    socket.emit('1');
+    socket.emit('feed');
     window.canvas.reenviar = false;
 });
 
 $( "#split" ).click(function() {
-    socket.emit('2');
+    socket.emit('split');
     window.canvas.reenviar = false;
 });
 

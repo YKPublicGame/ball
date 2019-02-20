@@ -1,6 +1,11 @@
 local util = require "util"
 local c = require "cfg"
 
+-- 根据质量计算半径
+local function massToRadius(mass)
+    return 4 + math.sqrt(mass) * 6
+end
+
 local M = {}
 
 function M:init()
@@ -32,15 +37,22 @@ function M:getID()
     return self.id
 end
 
-function M:addPlayer(id)
+function M:addPlayer()
+    local radius = util.massToRadius(c.defaultPlayerMass)
+
     local p = {
-        id = id,
+        id = self:getID(),
         x = math.random(1,c.gameWidth),
         y = math.random(1,c.gameHeight),
         w = c.defaultPlayerMass,
         h = c.defaultPlayerMass,
         cells = {
-        
+            {
+                mass = c.defaultPlayerMass,
+                x = math.random(1,c.gameWidth),
+                y = math.random(1,c.gameHeight),
+                radius = radius
+            }
         },
         massTotal = c.defaultPlayerMass,
         hue = math.random(1,360),
@@ -52,6 +64,7 @@ function M:addPlayer(id)
         }
     }
     table.insert(self.users,p)
+    return p
 end
 
 function M:getPlayer(id)
@@ -64,14 +77,14 @@ end
 
 -- 加食物
 function M:addFood(toAdd)
-    local radius = util.massToRadius(c.foodMass)
+    local radius = massToRadius(c.foodMass)
     for i=1,toAdd do
         local o = {
             id = self:getID(),
             x = math.random(1,c.gameWidth),
             y = math.random(1,c.gameHeight),
             radius = radius,
-            mass = 3,
+            mass = c.foodMass,
             hue = math.random(1,360)
         }
         table.insert(self.food,o)
@@ -80,7 +93,7 @@ end
 
 -- 加毒刺
 function M:addVirus(toAdd)
-    local radius = util.massToRadius(math.random(c.virus.defaultMass.from,c.virus.defaultMass.to))
+    local radius = massToRadius(math.random(c.virus.defaultMass.from,c.virus.defaultMass.to))
     for i=1,toAdd do
         local o = {
             id = self:getID(),
@@ -151,7 +164,7 @@ function M:movePlayer(player)
                     end
                 elseif distance < radiusTotal / 1.75 then
                     player.cells[i].mass = player.cells[i].mass + player.cells[j].mass
-                    player.cells[i].radius = util.massToRadius(player.cells[i].mass)
+                    player.cells[i].radius = massToRadius(player.cells[i].mass)
                     player.cells.splice(j, 1)
                 end
             end
@@ -244,6 +257,7 @@ function M:updateUsers()
     for _,v in ipairs(self.users) do
         self:tickPlayer(p)
     end
+
     for _,v in ipairs(self.massFood) do
         if v.speed > 0 then
            self:moveMass(v)

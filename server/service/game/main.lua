@@ -16,13 +16,22 @@ function CMD.enter(gate,fd,name)
     return p:getID()
 end
 
-function CMD.msg(playerid,cmd,data)
+function CMD.msg(fd,cmd,data)
     local f = handler[cmd]
     if not f then
         return
     end
 
-    return f(playerid,data)
+    local player = map:getPlayerByFd(fd)
+    if not player then
+        if cmd == "enter" then
+            player = map:addPlayer()
+        else
+            return
+        end
+    end
+
+    return f(player,data)
 end
 
 skynet.start(function ()

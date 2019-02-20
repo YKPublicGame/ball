@@ -1,9 +1,5 @@
 local M = {}
 
-function M.massToRadius(mass)
-    return 4 + math.sqrt(mass) * 6
-end
-
 function M.str_2_table(str)
     local func_str = "return "..str
     local func = load(func_str)
